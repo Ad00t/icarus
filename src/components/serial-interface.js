@@ -1,35 +1,20 @@
-import { Box, Button, Typography } from "@mui/material";
+import ComponentBox from "@/components/component-box";
+import { Button, Typography } from "@mui/material";
 
-export default function SerialInterface({isConnected, connect, disconnect, posx, posy, width, height }) {
+export default function SerialInterface({ isConnected, connect, disconnect, serialInfo, posx, posy, width, height }) {
 
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        left: posx,
-        top: posy,
-        width: width,
-        height: height,
-        borderRadius: 2,
-        bgcolor: '#222222',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
+    <ComponentBox
+      title="SERIAL"
+      posx={posx} posy={posy}
+      width={width} height={height}
     >
-      <Typography 
-        variant="h6"
-        align="center"
-        color="white"
-        padding="10px"
-      >
-        SERIAL INTERFACE
-      </Typography>
       <Button
         sx={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          margin: '0 auto'
         }}
         variant="contained"
         color={ isConnected ? "success" : "error" }
@@ -37,6 +22,15 @@ export default function SerialInterface({isConnected, connect, disconnect, posx,
       >
         { isConnected ? "Connected" : "Disconnected "}
       </Button>
-    </Box>
+      <Typography 
+        sx={{ whiteSpace: 'pre-line' }}
+        variant="p"
+        align="center"
+        color="black"
+        paddingTop="20px"
+      >
+        { serialInfo }
+      </Typography>
+    </ComponentBox>
   );
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import ComponentBox from "@/components/component-box";
 import Typography from "@mui/material/Typography"
 
 export default function Clock() {
@@ -11,14 +12,16 @@ export default function Clock() {
   }, 1000);
 
   return (
-    <div>
+    <ComponentBox>
       <Typography 
+        sx={{ fontWeight: 'bold' }}
         variant="h3" 
         align="center"
         padding="20px"
+        color="black"
       >
         { dateStr }
       </Typography>
-    </div>
+    </ComponentBox>
   );
 }
