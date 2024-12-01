@@ -1,3 +1,5 @@
+'use client'
+
 import ComponentBox from "@/components/component-box";
 import { Button, Typography } from "@mui/material";
 

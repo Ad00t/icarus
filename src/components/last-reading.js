@@ -2,7 +2,7 @@
 
 import React from "react";
 import ComponentBox from "@/components/component-box";
-import { Typography } from "@mui/material";
+import { Typography, Grid2 } from "@mui/material";
 
 export default function LastReading({ reading, posx, posy, width, height }) {
   return (
@@ -11,19 +11,23 @@ export default function LastReading({ reading, posx, posy, width, height }) {
       posx={posx} posy={posy}
       width={width} height={height}
     >
-      {
-        Object.keys(reading).map(key => (
-          <Typography
-            variant="p" 
-            color="black" 
-            paddingLeft="15px"
-            key={key}
-          >
-            { `${key}: ${reading[key]}` }
-            <br />
-          </Typography>
-        ))
-      }
+      <Grid2 container justifyContent="center">
+        <Grid2 item xs={12}>
+          {
+            Object.keys(reading).map(key => (
+              <Typography
+                variant="body1" 
+                color="black"
+                key={key}
+                gutterBottom
+              >
+                { `${key}: ${reading[key]}` }
+                <br />
+              </Typography>
+            ))
+          }
+        </Grid2>
+      </Grid2>
     </ComponentBox>
   );
 }

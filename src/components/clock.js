@@ -4,7 +4,7 @@ import { useState } from "react";
 import ComponentBox from "@/components/component-box";
 import Typography from "@mui/material/Typography"
 
-export default function Clock() {
+export default function Clock({ posx, posy, width, height }) {
   const [ dateStr, setDateStr ] = useState("");
 
   setInterval(() => {
@@ -12,10 +12,13 @@ export default function Clock() {
   }, 1000);
 
   return (
-    <ComponentBox>
+    <ComponentBox
+      posx={posx} posy={posy}
+      width={width} height={height}
+    >
       <Typography 
         sx={{ fontWeight: 'bold' }}
-        variant="h3" 
+        variant="h4" 
         align="center"
         padding="20px"
         color="black"

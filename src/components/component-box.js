@@ -1,6 +1,9 @@
+'use client'
+
+import React from "react";
 import { Box, Typography } from "@mui/material";
 
-export default function ComponentBox({ children, ...props }) {
+const ComponentBox = React.forwardRef(({ children, ...props }, ref) => {
   let sx = {
     borderRadius: 2,
     bgcolor: 'white',
@@ -43,4 +46,6 @@ export default function ComponentBox({ children, ...props }) {
       { children }
     </Box>
   );
-}
+});
+
+export default ComponentBox;

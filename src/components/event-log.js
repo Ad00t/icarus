@@ -1,8 +1,10 @@
+'use client'
+
 import { useRef, useEffect } from "react";
 import ComponentBox from "@/components/component-box";
-import { Typography } from "@mui/material";
+import { Typography, Grid2 } from "@mui/material";
 
-export default function Log({ eventLog, posx, posy, width, height }) {
+export default function EventLog({ eventLog, posx, posy, width, height }) {
   const boxRef = useRef(null);
   const logLevelMap = {
     0: 'INFO',
@@ -23,23 +25,27 @@ export default function Log({ eventLog, posx, posy, width, height }) {
       width={width} height={height}
       ref={boxRef}
     >
-      {
-        eventLog.map((log, i) => 
-          <Typography
-            sx={{
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-            variant="p" 
-            color="black" 
-            paddingLeft="15px"
-            key={i}
-          >
-            { `${new Date(log.rx_ts).toTimeString().slice(0, 8)} -- ${logLevelMap[log.level]} -- ${log.desc}` }
-            <br />
-          </Typography>
-        )
-      }
+      <Grid2 container justifyContent="center">
+        <Grid2 item sx={12}>
+          {
+            eventLog.map((log, i) => 
+              <Typography
+                sx={{
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+                variant="body1" 
+                color="black"
+                key={i}
+                gutterBottom
+              >
+                { `${new Date(log.rx_ts).toTimeString().slice(0, 8)} -- ${logLevelMap[log.level]} -- ${log.desc}` }
+                <br />
+              </Typography>
+            )
+          }
+        </Grid2>
+      </Grid2>
     </ComponentBox>
   );
 }
