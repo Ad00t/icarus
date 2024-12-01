@@ -30,7 +30,7 @@ const ComponentBox = React.forwardRef(({ children, ...props }, ref) => {
   }
 
   return (
-    <Box sx={sx} ref={props?.ref}>
+    <Box sx={sx} ref={ref}>
       { (props?.title && props?.title != "") && 
         <Typography 
           sx={{ fontWeight: 'bold' }}

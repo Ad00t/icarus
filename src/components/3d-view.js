@@ -4,18 +4,18 @@ import { useRef, useEffect } from "react";
 import ComponentBox from "@/components/component-box";
 import * as THREE from "three";
 
-export default function ThreeDView({ attitudes, posx, posy, width, height }) {
+export default function ThreeDView({ attitudesRef, attitudesLength, posx, posy, width, height }) {
   return (
     <ComponentBox
       posx={posx} posy={posy}
       width={width} height={height}
     >
-      <ThreeDGraph attitudes={attitudes} />
+      <ThreeDGraph attitudesRef={attitudesRef} attitudesLength={attitudesLength} />
     </ComponentBox>
   );
 }
 
-function ThreeDGraph({ attitudes }) {
+function ThreeDGraph({ attitudesRef, attitudesLength }) {
   const mountRef = useRef(null);
   const arrowRef = useRef(null); // Ref to store the arrow
   const cameraRef = useRef(null);
@@ -139,8 +139,8 @@ function ThreeDGraph({ attitudes }) {
       cameraRef.current.lookAt(0, 0, 0);
     }
 
-    if (attitudes.length > 0 && arrowRef.current) {
-      const curr_att = attitudes[attitudes.length - 1];
+    if (attitudesLength > 0 && arrowRef.current) {
+      const curr_att = attitudesRef.current[attitudesRef.current.length - 1];
       // Update the arrow based on the last attitude in the array
       updateArrow(
         arrowRef.current,
@@ -150,7 +150,7 @@ function ThreeDGraph({ attitudes }) {
         curr_att.roll
       );
     }
-  }, [attitudes]); // Runs whenever attitudes prop changes
+  }, [attitudesLength]); // Runs whenever attitudes prop changes
 
   return <div ref={mountRef} style={{ width: "100%", height: "100%" }}></div>;
 }

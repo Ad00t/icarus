@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SerialManager from "@/lib/serial-manager";
 import Clock from "@/components/clock";
 import LastReading from "@/components/last-reading";
@@ -15,20 +15,22 @@ export default function Home() {
   const [ isConnected, setIsConnected ] = useState(false);
   const [ serialInfo, setSerialInfo ] = useState("");
   const [ lastReading, setLastReading] = useState({});
-  const [ attitudes, setAttitudes ] = useState([ {
+  const attitudesRef = useRef([ {
     "ts": Date.now(),
     "yaw": 0, "pitch": 0, "roll": 0,
     "a_x": 0, "a_y": 0, "a_z": 0,
     "v_x": 0, "v_y": 0, "v_z": 0,
     "x": 0, "y": 0, "z": 0,
   } ]);
+  const [ attitudesLength, setAttitudesLength ] = useState(1);
   const [ eventLog, setEventLog ] = useState([]);
 
   function onPacketRecv(pobj) {
     switch (pobj.ptype) {
       case 0:
         setLastReading(pobj);
-        setAttitudes(prev => [ ...prev, calculateAttitude(pobj) ]);
+        attitudesRef.current.push(calculateAttitude(pobj));
+        setAttitudesLength(prev => prev + 1);
         break;
       case 1:
         setEventLog(prev => [ ...prev, pobj ]);
@@ -45,7 +47,8 @@ export default function Home() {
     att.a_x = pobj.a_x;
     att.a_y = pobj.a_y;
     att.a_z = pobj.a_z;
-    let last_att = attitudes[attitudes.length - 1];
+    let last_att = attitudesRef.current[attitudesRef.current.length - 1];
+    console.log('last:', last_att);
     let dt = (att.ts - last_att.ts) / 1000.0;
     att.v_x = last_att.v_x + att.a_x * dt;
     att.v_y = last_att.v_y + att.a_y * dt;
@@ -53,6 +56,7 @@ export default function Home() {
     att.x = last_att.x + att.v_x * dt;
     att.y = last_att.y + att.v_y * dt;
     att.z = last_att.z + att.v_z * dt;
+    console.log(att.ts, last_att.ts, dt, att.a_x, att.v_x, att.x);
     return att;
   }
 
@@ -84,7 +88,8 @@ export default function Home() {
         width={220} height={470}
       />
       <ThreeDView 
-        attitudes={attitudes}
+        attitudesRef={attitudesRef}
+        attitudesLength={attitudesLength}
         posx={240} posy={105}
         width={700} height={565}
       />
@@ -93,7 +98,8 @@ export default function Home() {
         posx={10} posy={680}
         width={375} height={170} />
       <Attitude
-        attitudes={attitudes}
+        attitudesRef={attitudesRef}
+        attitudesLength={attitudesLength}
         posx={395} posy={680}
         width={450} height={170}
       />

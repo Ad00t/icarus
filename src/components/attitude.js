@@ -4,9 +4,9 @@ import React from "react";
 import ComponentBox from "@/components/component-box";
 import { Typography, Grid2 } from "@mui/material";
 
-export default function Attitude({ attitudes, posx, posy, width, height }) {
+export default function Attitude({ attitudesRef, attitudesLength, posx, posy, width, height }) {
   function createAttLabel(key, r=2) {
-    let val = Math.round((attitudes[attitudes.length - 1][key] + Number.EPSILON) * Math.pow(10, r)) / Math.pow(10, r);
+    let val = Math.round((attitudesRef.current[attitudesRef.current.length - 1][key] + Number.EPSILON) * Math.pow(10, r)) / Math.pow(10, r);
     return (
       <Typography variant="body1" color="black" gutterBottom>
         { `${key.toUpperCase()}: ${val}` }
