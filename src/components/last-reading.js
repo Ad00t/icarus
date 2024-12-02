@@ -11,8 +11,8 @@ export default function LastReading({ reading, posx, posy, width, height }) {
       posx={posx} posy={posy}
       width={width} height={height}
     >
-      <Grid2 container justifyContent="center">
-        <Grid2 item xs={12}>
+      <Grid2 container justifyContent="left" marginLeft="15px">
+        <Grid2 xs={12}>
           {
             Object.keys(reading).map(key => (
               <Typography

@@ -17,9 +17,9 @@ export default function Home() {
   const [ lastReading, setLastReading] = useState({});
   const attitudesRef = useRef([ {
     "ts": Date.now(),
-    "yaw": 0, "pitch": 0, "roll": 0,
-    "a_x": 0, "a_y": 0, "a_z": 0,
-    "v_x": 0, "v_y": 0, "v_z": 0,
+    "qr": 0, "qi": 0, "qj": 0, "qk": 0,
+    "ax": 0, "ay": 0, "az": 0,
+    "vx": 0, "vy": 0, "vz": 0,
     "x": 0, "y": 0, "z": 0,
   } ]);
   const [ attitudesLength, setAttitudesLength ] = useState(1);
@@ -41,22 +41,25 @@ export default function Home() {
   function calculateAttitude(pobj) {
     const att = {};
     att.ts = pobj.rx_ts;
-    att.yaw = pobj.yaw;
-    att.pitch = pobj.pitch;
-    att.roll = pobj.roll;
-    att.a_x = pobj.a_x;
-    att.a_y = pobj.a_y;
-    att.a_z = pobj.a_z;
+    att.qr = pobj.qr;
+    att.qi = pobj.qi;
+    att.qj = pobj.qj;
+    att.qk = pobj.qk;
+    att.ax = pobj.ax;
+    att.ay = pobj.ay;
+    att.az = pobj.az;
     let last_att = attitudesRef.current[attitudesRef.current.length - 1];
     console.log('last:', last_att);
     let dt = (att.ts - last_att.ts) / 1000.0;
-    att.v_x = last_att.v_x + att.a_x * dt;
-    att.v_y = last_att.v_y + att.a_y * dt;
-    att.v_z = last_att.v_z + att.a_z * dt;
-    att.x = last_att.x + att.v_x * dt;
-    att.y = last_att.y + att.v_y * dt;
-    att.z = last_att.z + att.v_z * dt;
-    console.log(att.ts, last_att.ts, dt, att.a_x, att.v_x, att.x);
+    att.vx = last_att.vx + att.ax * dt;
+    att.vy = last_att.vy + att.ay * dt;
+    att.vz = last_att.vz + att.az * dt;
+    // att.x = last_att.x + att.vx * dt;
+    // att.y = last_att.y + att.vy * dt;
+    // att.z = last_att.z + att.vz * dt;
+    att.x = 0;
+    att.y = 0;
+    att.z = 0;
     return att;
   }
 
@@ -85,23 +88,23 @@ export default function Home() {
       <LastReading 
         reading={lastReading} 
         posx={10} posy={200} 
-        width={220} height={470}
+        width={220} height={640}
       />
       <ThreeDView 
         attitudesRef={attitudesRef}
         attitudesLength={attitudesLength}
         posx={240} posy={105}
-        width={700} height={565}
+        width={700} height={555}
       />
       <EventLog
         eventLog={eventLog}
-        posx={10} posy={680}
+        posx={240} posy={670}
         width={375} height={170} />
       <Attitude
         attitudesRef={attitudesRef}
         attitudesLength={attitudesLength}
-        posx={395} posy={680}
-        width={450} height={170}
+        posx={625} posy={670}
+        width={315} height={170}
       />
     </div>
   );

@@ -85,15 +85,18 @@ class SerialManager {
     pobj["rx_ts"] = Date.now();
     switch(pobj["ptype"]) {
       case 0: // READING
-        pobj["yaw"] = parseFloat(pstr_split[2]);
-        pobj["pitch"] = parseFloat(pstr_split[3]);
-        pobj["roll"] = parseFloat(pstr_split[4]);
-        pobj["a_x"] = parseFloat(pstr_split[5]);
-        pobj["a_y"] = parseFloat(pstr_split[6]);
-        pobj["a_z"] = parseFloat(pstr_split[7]);
-        pobj["temperature"] = parseFloat(pstr_split[8]);
-        pobj["pressure"] = parseFloat(pstr_split[9]);
-        pobj["altitude"] = parseFloat(pstr_split[10]);
+        pobj["gyro_cal"] = parseInt(pstr_split[2]);
+        pobj["acc_cal"] = parseInt(pstr_split[3]);
+        pobj["qr"] = parseFloat(pstr_split[4]);
+        pobj["qi"] = parseFloat(pstr_split[5]);
+        pobj["qj"] = parseFloat(pstr_split[6]);
+        pobj["qk"] = parseFloat(pstr_split[7]);
+        pobj["ax"] = parseFloat(pstr_split[8]);
+        pobj["ay"] = parseFloat(pstr_split[9]);
+        pobj["az"] = parseFloat(pstr_split[10]);
+        pobj["temperature"] = parseFloat(pstr_split[11]);
+        pobj["pressure"] = parseFloat(pstr_split[12]);
+        pobj["altitude"] = parseFloat(pstr_split[13]);
         break;
       case 1: // LOG
         pobj["level"] = parseInt(pstr_split[2]);

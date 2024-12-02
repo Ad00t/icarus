@@ -25,8 +25,8 @@ export default function EventLog({ eventLog, posx, posy, width, height }) {
       width={width} height={height}
       ref={boxRef}
     >
-      <Grid2 container justifyContent="center">
-        <Grid2 item sx={12}>
+      <Grid2 container justifyContent="left" marginLeft="15px" marginBottom="10px">
+        <Grid2 sx={12}>
           {
             eventLog.map((log, i) => 
               <Typography
@@ -37,7 +37,6 @@ export default function EventLog({ eventLog, posx, posy, width, height }) {
                 variant="body1" 
                 color="black"
                 key={i}
-                gutterBottom
               >
                 { `${new Date(log.rx_ts).toTimeString().slice(0, 8)} -- ${logLevelMap[log.level]} -- ${log.desc}` }
                 <br />
