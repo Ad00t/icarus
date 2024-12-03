@@ -16,13 +16,11 @@ export default function Home() {
   const [ serialInfo, setSerialInfo ] = useState("");
   const [ lastReading, setLastReading] = useState({});
   const attitudesRef = useRef([ {
-    "ts": Date.now(),
     "qr": 0, "qi": 0, "qj": 0, "qk": 0,
     "ax": 0, "ay": 0, "az": 0,
     "vx": 0, "vy": 0, "vz": 0,
     "x": 0, "y": 0, "z": 0,
   } ]);
-  const [ attitudesLength, setAttitudesLength ] = useState(1);
   const [ eventLog, setEventLog ] = useState([]);
 
   function onPacketRecv(pobj) {
@@ -30,12 +28,15 @@ export default function Home() {
       case 0:
         setLastReading(pobj);
         attitudesRef.current.push(calculateAttitude(pobj));
-        setAttitudesLength(prev => prev + 1);
         break;
       case 1:
         setEventLog(prev => [ ...prev, pobj ]);
         break;
     }
+  }
+
+  function clamp(value, threshold = 1e-3) {
+    return Math.abs(value) < threshold ? 0 : value;
   }
 
   function calculateAttitude(pobj) {
@@ -45,21 +46,23 @@ export default function Home() {
     att.qi = pobj.qi;
     att.qj = pobj.qj;
     att.qk = pobj.qk;
-    att.ax = pobj.ax;
-    att.ay = pobj.ay;
-    att.az = pobj.az;
-    let last_att = attitudesRef.current[attitudesRef.current.length - 1];
-    console.log('last:', last_att);
-    let dt = (att.ts - last_att.ts) / 1000.0;
-    att.vx = last_att.vx + att.ax * dt;
-    att.vy = last_att.vy + att.ay * dt;
-    att.vz = last_att.vz + att.az * dt;
-    // att.x = last_att.x + att.vx * dt;
-    // att.y = last_att.y + att.vy * dt;
-    // att.z = last_att.z + att.vz * dt;
-    att.x = 0;
-    att.y = 0;
-    att.z = 0;
+    att.ax = clamp(pobj.az);
+    att.ay = clamp(pobj.ay);
+    att.az = clamp(pobj.ax);
+    let lastAtt = attitudesRef.current[attitudesRef.current.length - 1];
+    if (!lastAtt.ts) lastAtt.ts = att.ts;
+    let dt = (att.ts - lastAtt.ts) / 1000.0;
+    console.log('dt:', dt);
+    att.vx = clamp(lastAtt.vx + att.ax * dt);
+    att.vy = clamp(lastAtt.vy + att.ay * dt);
+    att.vz = clamp(lastAtt.vz + att.az * dt);
+    att.x = lastAtt.x + att.vx * dt;
+    att.y = lastAtt.y + att.vy * dt;
+    att.z = lastAtt.z + att.vz * dt;
+    if (att.z <= 0) {
+      att.z = 0;
+      att.vz = 0;
+    }
     return att;
   }
 
@@ -92,9 +95,8 @@ export default function Home() {
       />
       <ThreeDView 
         attitudesRef={attitudesRef}
-        attitudesLength={attitudesLength}
         posx={240} posy={105}
-        width={700} height={555}
+        width={760} height={555}
       />
       <EventLog
         eventLog={eventLog}
@@ -102,9 +104,8 @@ export default function Home() {
         width={375} height={170} />
       <Attitude
         attitudesRef={attitudesRef}
-        attitudesLength={attitudesLength}
         posx={625} posy={670}
-        width={315} height={170}
+        width={375} height={170}
       />
     </div>
   );
