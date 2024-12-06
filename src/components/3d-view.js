@@ -5,9 +5,9 @@ import ComponentBox from "@/components/component-box";
 import Button from "@mui/material/Button";
 import * as THREE from "three";
 
-export default function ThreeDView({ attitudesRef, posx, posy, width, height }) {
+export default function ThreeDView({ posesRef, posx, posy, width, height }) {
   function onReset() {
-    attitudesRef.current.push({
+    posesRef.current.push({
       "ts": Date.now(),
       "qr": 0, "qi": 0, "qj": 0, "qk": 0,
       "ax": 0, "ay": 0, "az": 0,
@@ -28,12 +28,12 @@ export default function ThreeDView({ attitudesRef, posx, posy, width, height }) 
       >
         RESET
       </Button>
-      <ThreeDGraph attitudesRef={attitudesRef}/>
+      <ThreeDGraph posesRef={posesRef}/>
     </ComponentBox>
   );
 }
 
-function ThreeDGraph({ attitudesRef }) {
+function ThreeDGraph({ posesRef }) {
   const mountRef = useRef(null);
   const rocketRef = useRef(null);
   const cameraRef = useRef(null);
@@ -106,13 +106,13 @@ function ThreeDGraph({ attitudesRef }) {
       requestAnimationFrame(animate);
 
       if (rocketRef.current) {
-        const currAtt = attitudesRef.current[attitudesRef.current.length - 1];
-        const rocketPosition = new THREE.Vector3(currAtt.x, currAtt.y, currAtt.z);
-        const quaternion = new THREE.Quaternion(currAtt.qi, currAtt.qj, currAtt.qk, currAtt.qr);
+        const currPose = posesRef.current[posesRef.current.length - 1];
+        const rocketPosition = new THREE.Vector3(currPose.x, currPose.y, currPose.z);
+        const quaternion = new THREE.Quaternion(currPose.qi, currPose.qj, currPose.qk, currPose.qr);
         quaternion.multiply(alignToZneg);
         rocketRef.current.position.copy(rocketPosition);
         rocketRef.current.quaternion.copy(quaternion);
-        const camPosition = new THREE.Vector3(currAtt.x, currAtt.y, currAtt.z).add(cameraOff);
+        const camPosition = new THREE.Vector3(currPose.x, currPose.y, currPose.z).add(cameraOff);
         cameraRef.current.position.copy(camPosition);
         cameraRef.current.lookAt(rocketPosition);
       }
