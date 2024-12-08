@@ -78,6 +78,7 @@ class SerialManager {
   interpretRxPacket(pstr) {
     const pobj = {};
     const pstr_split = pstr.split(',');
+    console.log(pstr);
     pobj["rssi"] = parseFloat(pstr_split[0]);
     pobj["ptype"] = parseInt(pstr_split[1][0]);
     pobj["src"] = parseInt(pstr_split[1][1]);
@@ -86,14 +87,14 @@ class SerialManager {
     switch(pobj["ptype"]) {
       case 0: // READING
         pobj["gyro_cal"] = parseInt(pstr_split[2]);
-        pobj["acc_cal"] = parseInt(pstr_split[3]);
+        pobj["lacc_cal"] = parseInt(pstr_split[3]);
         pobj["qr"] = parseFloat(pstr_split[4]);
         pobj["qi"] = parseFloat(pstr_split[5]);
         pobj["qj"] = parseFloat(pstr_split[6]);
         pobj["qk"] = parseFloat(pstr_split[7]);
-        pobj["ax"] = parseFloat(pstr_split[8]);
-        pobj["ay"] = parseFloat(pstr_split[9]);
-        pobj["az"] = parseFloat(pstr_split[10]);
+        pobj["lax"] = parseFloat(pstr_split[8]);
+        pobj["lay"] = parseFloat(pstr_split[9]);
+        pobj["laz"] = parseFloat(pstr_split[10]);
         pobj["temperature"] = parseFloat(pstr_split[11]);
         pobj["pressure"] = parseFloat(pstr_split[12]);
         pobj["altitude"] = parseFloat(pstr_split[13]);

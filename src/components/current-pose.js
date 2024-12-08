@@ -5,11 +5,12 @@ import ComponentBox from "@/components/component-box";
 import { Typography, Grid2 } from "@mui/material";
 
 export default function Pose({ posesRef, posx, posy, width, height }) {
-  function createPoseLabel(key, r=2) {
-    let val = Math.round((posesRef.current[posesRef.current.length - 1][key] + Number.EPSILON) * Math.pow(10, r)) / Math.pow(10, r);
+  function createPoseLabel(type, component, label, r=2) {
+    let val = posesRef.current[posesRef.current.length - 1][type][component];
+    val = Math.round((val + Number.EPSILON) * Math.pow(10, r)) / Math.pow(10, r);
     return (
       <Typography variant="body1" color="black">
-        { `${key.toUpperCase()}: ${val}` }
+        { `${label.toUpperCase()}: ${val}` }
       </Typography>
     );
   } 
@@ -22,28 +23,28 @@ export default function Pose({ posesRef, posx, posy, width, height }) {
     >
       <Grid2 justifyContent="center" container spacing={3}>
         <Grid2 xs={3}>
-          { createPoseLabel('qr') }
-          { createPoseLabel('qi') }
-          { createPoseLabel('qj') }
-          { createPoseLabel('qk') }
+          { createPoseLabel('quat', 'w', 'qr') }
+          { createPoseLabel('quat', 'x', 'qi') }
+          { createPoseLabel('quat', 'y', 'qj') }
+          { createPoseLabel('quat', 'z', 'qk') }
         </Grid2>
 
         <Grid2 xs={3}>
-          { createPoseLabel('x') }
-          { createPoseLabel('y') }
-          { createPoseLabel('z') }
+          { createPoseLabel('pos', 'x', 'x') }
+          { createPoseLabel('pos', 'y', 'y') }
+          { createPoseLabel('pos', 'z', 'z') }
         </Grid2>
 
         <Grid2 xs={3}>
-          { createPoseLabel('vx') }
-          { createPoseLabel('vy') }
-          { createPoseLabel('vz') }
+          { createPoseLabel('vel', 'x', 'vx') }
+          { createPoseLabel('vel', 'y', 'vy') }
+          { createPoseLabel('vel', 'z', 'vz') }
         </Grid2>
 
         <Grid2 xs={3}>
-          { createPoseLabel('ax') }
-          { createPoseLabel('ay') }
-          { createPoseLabel('az') }
+          { createPoseLabel('acc', 'x', 'ax') }
+          { createPoseLabel('acc', 'y', 'ay') }
+          { createPoseLabel('acc', 'z', 'az') }
         </Grid2>
       </Grid2>
     </ComponentBox>

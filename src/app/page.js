@@ -9,6 +9,7 @@ import EventLog from "@/components/event-log";
 import Pose from "@/components/current-pose";
 import dynamic from "next/dynamic";
 const ThreeDView = dynamic(() => import("@/components/3d-view"), { ssr: false });
+import * as THREE from "three";
 
 export default function Home() {
   const [ serialManager, setSerialManager ] = useState(null);
@@ -16,10 +17,10 @@ export default function Home() {
   const [ serialInfo, setSerialInfo ] = useState("");
   const [ lastReading, setLastReading] = useState({});
   const posesRef = useRef([ {
-    "qr": 0, "qi": 0, "qj": 0, "qk": 0,
-    "ax": 0, "ay": 0, "az": 0,
-    "vx": 0, "vy": 0, "vz": 0,
-    "x": 0, "y": 0, "z": 0,
+    "quat": new THREE.Quaternion(0, 0, 0, 0),
+    "acc": new THREE.Vector3(0, 0, 0),
+    "vel": new THREE.Vector3(0, 0, 0),
+    "pos": new THREE.Vector3(0, 0, 0),
   } ]);
   const [ eventLog, setEventLog ] = useState([]);
 
@@ -39,31 +40,26 @@ export default function Home() {
     return Math.abs(value) < threshold ? 0 : value;
   }
 
+  const alignToZneg = new THREE.Quaternion();
+  alignToZneg.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
+
   function calculatePose(pobj) {
-    const att = {};
-    att.ts = pobj.rx_ts;
-    att.qr = pobj.qr;
-    att.qi = pobj.qi;
-    att.qj = pobj.qj;
-    att.qk = pobj.qk;
-    att.ax = clamp(pobj.az);
-    att.ay = clamp(pobj.ay);
-    att.az = clamp(pobj.ax);
+    const pose = { 'ts': pobj.rx_ts };
+    pose.quat = new THREE.Quaternion(pobj.qi, pobj.qj, pobj.qk, pobj.qr);
+    pose.acc = new THREE.Vector3(clamp(pobj.lax), clamp(pobj.lay), clamp(pobj.laz));
+    pose.acc.applyQuaternion(pose.quat);
+    pose.quat.multiply(alignToZneg);
+
     let lastPose = posesRef.current[posesRef.current.length - 1];
-    if (!lastPose.ts) lastPose.ts = att.ts;
-    let dt = (att.ts - lastPose.ts) / 1000.0;
+    if (!lastPose.ts) lastPose.ts = pose.ts;
+    let dt = (pose.ts - lastPose.ts) / 1000.0;
     console.log('dt:', dt);
-    att.vx = clamp(lastPose.vx + att.ax * dt);
-    att.vy = clamp(lastPose.vy + att.ay * dt);
-    att.vz = clamp(lastPose.vz + att.az * dt);
-    att.x = lastPose.x + att.vx * dt;
-    att.y = lastPose.y + att.vy * dt;
-    att.z = lastPose.z + att.vz * dt;
-    if (att.z <= 0) {
-      att.z = 0;
-      att.vz = 0;
-    }
-    return att;
+
+    pose.vel = lastPose.vel.clone().addScaledVector(pose.acc, dt);
+    pose.vel.setComponent(2, Math.max(0, pose.vel.z));
+    pose.pos = lastPose.pos.clone().addScaledVector(pose.vel, dt);
+    pose.pos.setComponent(2, Math.max(0, pose.pos.z));
+    return pose;
   }
 
   useEffect(() => {

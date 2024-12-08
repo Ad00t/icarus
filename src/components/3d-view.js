@@ -9,10 +9,10 @@ export default function ThreeDView({ posesRef, posx, posy, width, height }) {
   function onReset() {
     posesRef.current.push({
       "ts": Date.now(),
-      "qr": 0, "qi": 0, "qj": 0, "qk": 0,
-      "ax": 0, "ay": 0, "az": 0,
-      "vx": 0, "vy": 0, "vz": 0,
-      "x": 0, "y": 0, "z": 0,
+      "quat": new THREE.Quaternion(0, 0, 0, 0),
+      "acc": new THREE.Vector3(0, 0, 0),
+      "vel": new THREE.Vector3(0, 0, 0),
+      "pos": new THREE.Vector3(0, 0, 0),
     });
   }
   
@@ -38,13 +38,10 @@ function ThreeDGraph({ posesRef }) {
   const rocketRef = useRef(null);
   const cameraRef = useRef(null);
 
-  const cameraOff = new THREE.Vector3(10, 10, 10);
+  const cameraOff = new THREE.Vector3(5, 5, 5);
 
   const alignToZpos = new THREE.Quaternion();
   alignToZpos.setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI / 2);
-
-  const alignToZneg = new THREE.Quaternion();
-  alignToZneg.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -102,21 +99,27 @@ function ThreeDGraph({ posesRef }) {
     }
     rocketRef.current = createRocket(scene);
 
+    let distance = camera.position.distanceTo(rocketRef.current.position);
+    const handleScroll = (event) => {
+        event.preventDefault();
+        const target = rocketRef.current.position;
+        distance += event.deltaY * 0.01;
+        distance = Math.max(1, Math.min(50, distance));
+        const direction = new THREE.Vector3().subVectors(camera.position, target).normalize();
+        cameraOff.copy(direction.multiplyScalar(distance));
+    };
+    mountRef.current.addEventListener("wheel", handleScroll);
+
     const animate = () => {
       requestAnimationFrame(animate);
-
       if (rocketRef.current) {
         const currPose = posesRef.current[posesRef.current.length - 1];
-        const rocketPosition = new THREE.Vector3(currPose.x, currPose.y, currPose.z);
-        const quaternion = new THREE.Quaternion(currPose.qi, currPose.qj, currPose.qk, currPose.qr);
-        quaternion.multiply(alignToZneg);
-        rocketRef.current.position.copy(rocketPosition);
-        rocketRef.current.quaternion.copy(quaternion);
-        const camPosition = new THREE.Vector3(currPose.x, currPose.y, currPose.z).add(cameraOff);
-        cameraRef.current.position.copy(camPosition);
-        cameraRef.current.lookAt(rocketPosition);
+        rocketRef.current.position.copy(currPose.pos);
+        rocketRef.current.quaternion.copy(currPose.quat);
+        const camPos = currPose.pos.clone().add(cameraOff);
+        cameraRef.current.position.copy(camPos);
+        cameraRef.current.lookAt(currPose.pos);
       }
-
       renderer.render(scene, camera);
     };
 
@@ -128,6 +131,7 @@ function ThreeDGraph({ posesRef }) {
         mountRef.current.removeChild(renderer.domElement);
       }
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("wheel", handleScroll);
     };
   }, []);
 
