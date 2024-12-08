@@ -24,10 +24,15 @@ export default function Home() {
     "vel": new THREE.Vector3(0, 0, 0),
     "pos": new THREE.Vector3(0, 0, 0),
   } ]);
-  const [ chartData, setChartData ] = useState([]);
+  const [ chartData, setChartData ] = useState({ "pps": [], "rssi": [], "acc": [], "vel": [], "pos": [] });
   const [ eventLog, setEventLog ] = useState([]);
+  const csvWriterRef = useRef(null);
 
-  let lastRecvTime = -1;
+  let packetCount = 0;
+
+  function appendChartData(chart, chartPoint) {
+    setChartData(prev => ({ ...prev, [chart]: [ ...prev[chart].slice(Math.max(0, prev[chart].length > 600 ? prev[chart].length - 500 : 0)), chartPoint ] }));
+  }
 
   function onPacketRecv(pobj) {
     switch (pobj.ptype) {
@@ -35,30 +40,20 @@ export default function Home() {
         setLastReading(pobj);
         let pose = calculatePose(pobj)
         posesRef.current.push(pose);
-        let chartPoint = {
-          "ts": pose.ts, 
-          "ax": pose.acc.x, "ay": pose.acc.y, "az": pose.acc.z,
-          "vx": pose.vel.x, "vy": pose.vel.y, "vz": pose.vel.z,
-          "px": pose.pos.x, "py": pose.pos.y, "pz": pose.pos.z,
-        };
         if ('rssi' in pobj) {
-          chartPoint.rssi = pobj.rssi;
-          if (lastRecvTime > 0) {
-            chartPoint.pps = 1.0 / (pose.ts - lastRecvTime);
-          } else {
-            chartPoint.pps = null;
-          }
-          console.log(chartPoint.rssi, chartPoint.pps);
-          lastRecvTime = pose.ts;
-        } else {
-          chartPoint.rssi = null;
-          chartPoint.pps = null;
+          appendChartData("rssi", { "ts": pose.ts, "rssi": pobj.rssi });
+          packetCount++;
         }
-        setChartData(prev => [ ...prev.slice(Math.max(0, prev.length > 600 ? prev.length - 500 : 0)), chartPoint ]);
+        appendChartData("acc", { "ts": pose.ts, "ax": pose.acc.x, "ay": pose.acc.y, "az": pose.acc.z });
+        appendChartData("vel", { "ts": pose.ts, "vx": pose.vel.x, "vy": pose.vel.y, "vz": pose.vel.z });
+        appendChartData("pos", { "ts": pose.ts, "px": pose.pos.x, "py": pose.pos.y, "pz": pose.pos.z });
         break;
       case 1:
         setEventLog(prev => [ ...prev, pobj ]);
         break;
+    }
+    if (csvWriterRef.current) {
+      csvWriterRef.current.writeRecords(pobj);
     }
   }
 
@@ -84,17 +79,22 @@ export default function Home() {
     let dt = pose.ts - lastPose.ts;
 
     pose.vel = lastPose.vel.clone().addScaledVector(pose.acc, dt);
-    pose.vel = pose.vel.set(clamp(pose.vel.x), clamp(pose.vel.y), clamp(Math.max(0, pose.vel.z)));
+    pose.vel = pose.vel.set(clamp(pose.vel.x), clamp(pose.vel.y), clamp(pose.vel.z));
     pose.pos = lastPose.pos.clone().addScaledVector(pose.vel, dt);
-    pose.pos.setComponent(2, Math.max(0, pose.pos.z));
+    pose.pos = pose.pos.setComponent(2, Math.max(0, pose.pos.z));
     return pose;
   }
 
   useEffect(() => {
     const manager = new SerialManager(onPacketRecv, setIsConnected, setSerialInfo);
     setSerialManager(manager);
+    const ppsInterval = setInterval(() => {
+      appendChartData("pps", { ts: new Date().toTimeString().slice(0, 8), pps: packetCount });
+      packetCount = 0;
+    }, 1000);
     return () => {
       manager?.disconnect();
+      clearInterval(ppsInterval);
     };
   }, []);
 
@@ -107,6 +107,7 @@ export default function Home() {
       <Controls 
         posesRef={posesRef}
         setChartData={setChartData}
+        csvWriterRef={csvWriterRef}
         posx={675} posy={10} 
         width={325} height={85} 
       />

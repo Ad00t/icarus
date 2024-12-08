@@ -1,105 +1,19 @@
 'use client'
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import ComponentBox from "@/components/component-box";
 import { Button, Grid2 } from "@mui/material";
 import { LineChart } from '@mui/x-charts/LineChart';
 
 export default function Charts({ chartData, posx, posy, width, height }) {
   const boxRef = useRef(null);
-  const [ chartVis, setChartVis ] = useState({ 
-    "packet": true,  
-    "acc": true,
-    "vel": true,
-    "pos": true
+  const [ chartConfigs, setChartConfigs ] = useState({
+    "pps": { "visible": true },
+    "rssi": { "visible": true },
+    "acc": { "visible": true },
+    "vel": { "visible": true },
+    "pos": { "visible": true } 
   });
-
-  const [packetChart, setPacketChart] = useState({
-    dataset: chartData,
-    xAxis: [{ data: [], label: 'Elapsed Time (s)' }],
-    series: [
-      { data: [], label: 'RSSI (dBm)', showMark: false, color: '#FF0000', connectNulls: true },
-      { data: [], label: 'Packet Rate (Hz)', showMark: false, color: '#0000FF', connectNulls: true },
-    ], 
-    skipAnimation: true
-  });
-
-  const [accChart, setAccChart] = useState({
-    dataset: chartData,
-    xAxis: [{ data: [], label: 'Elapsed Time (s)' }],
-    series: [
-      { data: [], label: 'AX (m/s^2)', showMark: false },
-      { data: [], label: 'AY (m/s^2)', showMark: false },
-      { data: [], label: 'AZ (m/s^2)', showMark: false },
-    ], 
-    skipAnimation: true
-  });
-
-  const [velChart, setVelChart] = useState({
-    dataset: chartData,
-    xAxis: [{ data: [], label: 'Elapsed Time (s)' }],
-    series: [
-      { data: [], label: 'VX (m/s)', showMark: false },
-      { data: [], label: 'VY (m/s)', showMark: false },
-      { data: [], label: 'VZ (m/s)', showMark: false },
-    ], 
-    skipAnimation: true
-  });
-
-  const [posChart, setPosChart] = useState({
-    dataset: chartData,
-    xAxis: [{ data: [], label: 'Elapsed Time (s)' }],
-    series: [
-      { data: [], label: 'PX (m)', showMark: false },
-      { data: [], label: 'PY (m)', showMark: false },
-      { data: [], label: 'PZ (m)', showMark: false },
-    ], 
-    skipAnimation: true
-  });
-
-  const updateChartData = () => {
-    setPacketChart({
-      dataset: chartData,
-      xAxis: [{ dataKey: 'ts', label: 'Elapsed Time (s)' }],
-      series: [
-        { dataKey: 'rssi', label: 'RSSI (dBm)', showMark: false, color: '#FF0000', connectNulls: true },
-        { dataKey: 'pps', label: 'Packet Rate (Hz)', showMark: false, color: '#0000FF', connectNulls: true },
-      ], 
-      skipAnimation: true
-    });
-    setAccChart({
-      dataset: chartData,
-      xAxis: [{ dataKey: 'ts', label: 'Elapsed Time (s)' }],
-      series: [
-        { dataKey: 'ax', label: 'AX (m/s^2)', showMark: false },
-        { dataKey: 'ay', label: 'AY (m/s^2)', showMark: false },
-        { dataKey: 'az', label: 'AZ (m/s^2)', showMark: false },
-      ], 
-      skipAnimation: true
-    });
-    setVelChart({
-      dataset: chartData,
-      xAxis: [{ dataKey: 'ts', label: 'Elapsed Time (s)' }],
-      series: [
-        { dataKey: 'vx', label: 'VX (m/s)', showMark: false },
-        { dataKey: 'vy', label: 'VY (m/s)', showMark: false },
-        { dataKey: 'vz', label: 'VZ (m/s)', showMark: false },
-      ], 
-      skipAnimation: true
-    });
-    setPosChart({
-      dataset: chartData,
-      xAxis: [{ dataKey: 'ts', label: 'Elapsed Time (s)' }],
-      series: [
-        { dataKey: 'px', label: 'PX (m)', showMark: false },
-        { dataKey: 'py', label: 'PY (m)', showMark: false },
-        { dataKey: 'pz', label: 'PZ (m)', showMark: false },
-      ], 
-      skipAnimation: true
-    });
-  };
-
-  useEffect(updateChartData, [ chartData ]);
 
   return (
     <ComponentBox
@@ -111,68 +25,97 @@ export default function Charts({ chartData, posx, posy, width, height }) {
         <Grid2 container spacing={1}>
           <Button
             variant="contained"
-            color={chartVis.packet ? 'success' : 'error' }
-            onClick={() => setChartVis({ ...chartVis, packet: !chartVis.packet })}
+            color={chartConfigs.pps.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, pps: { "visible": !chartConfigs.pps.visible } })}
           >
-            PACKET
+            PPS
           </Button>
           <Button
             variant="contained"
-            color={chartVis.acc ? 'success' : 'error' }
-            onClick={() => setChartVis({ ...chartVis, acc: !chartVis.acc })}
+            color={chartConfigs.rssi.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, rssi: { "visible": !chartConfigs.rssi.visible } })}
+          >
+            RSSI
+          </Button>
+          <Button
+            variant="contained"
+            color={chartConfigs.acc.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, acc: { "visible": !chartConfigs.acc.visible } })}
           >
             ACC
           </Button>
           <Button
             variant="contained"
-            color={chartVis.vel ? 'success' : 'error' }
-            onClick={() => setChartVis({ ...chartVis, vel: !chartVis.vel })}
+            color={chartConfigs.vel.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, vel: { "visible": !chartConfigs.vel.visible } })}
           >
             VEL
           </Button>
           <Button
             variant="contained"
-            color={chartVis.pos ? 'success' : 'error' }
-            onClick={() => setChartVis({ ...chartVis, pos: !chartVis.pos })}
+            color={chartConfigs.pos.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, pos: { "visible": !chartConfigs.pos.visible } })}
           >
             POS
           </Button>
         </Grid2>
-        { chartVis.packet && 
+        { chartConfigs.pps.visible && 
           <LineChart
-            dataset={chartData}
-            xAxis={packetChart.xAxis}
-            series={packetChart.series}
+            dataset={chartData.pps}
+            xAxis={[{ dataKey: 'ts', label: 'Time (HH:MM:SS)', scaleType: 'point' }]}
+            series={[{ dataKey: 'pps', label: 'Packet Rate (Hz)', showMark: false, color: '#0000FF', connectNulls: true }]}
+            width={600}
+            height={200}
+            skipAnimation
+          />
+        }
+        { chartConfigs.rssi.visible && 
+          <LineChart
+            dataset={chartData.rssi}
+            xAxis={[{ dataKey: 'ts', label: 'Elapsed Time (s)' }]}
+            series={[{ dataKey: 'rssi', label: 'RSSI (dBm)', showMark: false, color: '#FF0000', connectNulls: true }]}
+            width={600}
+            height={200}
+            skipAnimation
+          />
+        }
+        { chartConfigs.acc.visible && 
+          <LineChart
+            dataset={chartData.acc}
+            xAxis={[{ dataKey: 'ts', label: 'Elapsed Time (s)' }]}
+            series={[
+              { dataKey: 'ax', label: 'AX (m/s^2)', showMark: false, connectNulls: true },
+              { dataKey: 'ay', label: 'AY (m/s^2)', showMark: false, connectNulls: true },
+              { dataKey: 'az', label: 'AZ (m/s^2)', showMark: false, connectNulls: true },
+            ]}
             width={600}
             height={400}
             skipAnimation
           />
         }
-        { chartVis.acc && 
+        { chartConfigs.vel.visible && 
           <LineChart
-            dataset={chartData}
-            xAxis={accChart.xAxis}
-            series={accChart.series}
+            dataset={chartData.vel}
+            xAxis={[{ dataKey: 'ts', label: 'Elapsed Time (s)' }]}
+            series={[
+              { dataKey: 'vx', label: 'VX (m/s)', showMark: false, connectNulls: true },
+              { dataKey: 'vy', label: 'VY (m/s)', showMark: false, connectNulls: true },
+              { dataKey: 'vz', label: 'VZ (m/s)', showMark: false, connectNulls: true },
+            ]}
             width={600}
             height={400}
             skipAnimation
           />
         }
-        { chartVis.vel && 
+        { chartConfigs.pos.visible && 
           <LineChart
-            dataset={chartData}
-            xAxis={velChart.xAxis}
-            series={velChart.series}
-            width={600}
-            height={400}
-            skipAnimation
-          />
-        }
-        { chartVis.pos && 
-          <LineChart
-            dataset={chartData}
-            xAxis={posChart.xAxis}
-            series={posChart.series}
+            dataset={chartData.pos}
+            xAxis={[{ dataKey: 'ts', label: 'Elapsed Time (s)' }]}
+            series={[
+              { dataKey: 'px', label: 'PX (m)', showMark: false, connectNulls: true },
+              { dataKey: 'py', label: 'PY (m)', showMark: false, connectNulls: true },
+              { dataKey: 'pz', label: 'PZ (m)', showMark: false, connectNulls: true },
+            ]}
             width={600}
             height={400}
             skipAnimation
