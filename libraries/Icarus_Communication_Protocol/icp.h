@@ -17,9 +17,12 @@ class packet_t {
 public:
     packet_type ptype;
     terminus src, dest;
+    mutable unsigned long ts;
 
     packet_t(packet_type ptype, terminus src, terminus dest);
     packet_t();
+
+    void set_ts(unsigned long t) const;
 
     virtual string data_packetify() const = 0;
     virtual string data_prettify() const = 0;
@@ -34,8 +37,8 @@ public:
 // Reading Packet Class
 class reading_packet_t : public packet_t {
 public:
-    int gyro_cal, acc_cal;
-    float qr, qi, qj, qk, ax, ay, az, temperature, pressure, altitude;
+    int gyro_cal, lacc_cal;
+    float qr, qi, qj, qk, lax, lay, laz, temperature, pressure, altitude;
 
     reading_packet_t();
 

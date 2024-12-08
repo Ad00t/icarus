@@ -3,27 +3,67 @@
 #include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP3XX.h>
-#include <SPI.h>
 #include <RH_RF95.h>
-#include <chrono>
 #include <icp.h>
+
+bool DEBUG_MODE = false;
+template <typename T>
+void DEBUG_PRINT(T x) { if (DEBUG_MODE) Serial.print(String(x)); }
+template <typename T>
+void DEBUG_PRINTLN(T x) { if (DEBUG_MODE) Serial.println(String(x)); }
 
 Adafruit_BNO08x bno;
 sh2_SensorValue_t sensorValue;
-#define SEALEVELPRESSURE_HPA (1015)
+int SEALEVELPRESSURE_HPA = 1019;
 Adafruit_BMP3XX bmp;
 RH_RF95 rf95(4, 3);
-bool debug = false;
+
+char packet_buffer[RH_RF95_MAX_MESSAGE_LEN];
+int packet_index = 0;
+int n_packets = 0;
 
 void transmit_packet(const packet_t& packet) {
+  packet.set_ts(millis());
   string pstr = packet.packetify();
-  if (debug) Serial.println(String(pstr.c_str()));
-  if (debug) Serial.print("Transmitting...   ");
+  DEBUG_PRINTLN(String(pstr.c_str()));
+  DEBUG_PRINT("Transmitting...   ");
   bool packet_valid = rf95.send((uint8_t*) pstr.c_str(), pstr.length() + 1);
-  if (debug) Serial.print("Valid:");
-  if (debug) Serial.print(packet_valid);
+  DEBUG_PRINT("Valid:");
+  DEBUG_PRINT(packet_valid);
   // rf95.waitPacketSent();
-  if (debug) Serial.println(" Done");
+  DEBUG_PRINTLN(" Done");
+}
+
+void transmit_packet_buffer() {
+  DEBUG_PRINTLN(String(packet_buffer));
+  DEBUG_PRINT("Transmitting...   ");
+  bool packet_valid = rf95.send((uint8_t*) packet_buffer, packet_index - 1);
+  DEBUG_PRINT("Valid:");
+  DEBUG_PRINT(packet_valid);
+  // rf95.waitPacketSent();
+  DEBUG_PRINTLN(" Done");
+}
+
+void reset_packet_buffer() {
+  packet_index = 0;
+  n_packets = 0;
+  memset(packet_buffer, 0, sizeof(packet_buffer));
+}
+
+void buffer_packet(const packet_t& packet) {
+  packet.set_ts(millis());
+  string pstr = packet.packetify();
+  if (pstr.length() > sizeof(packet_buffer)) return;
+  if (packet_index + pstr.length() + 1 < sizeof(packet_buffer)) {
+    strcat(packet_buffer, pstr.c_str());
+    strcat(packet_buffer, ";");
+    packet_index += pstr.length() + 1;
+    n_packets++;
+  } else {
+    transmit_packet_buffer();
+    reset_packet_buffer();
+    buffer_packet(packet);
+  }
 }
 
 void set_reports() {
@@ -38,20 +78,18 @@ void set_reports() {
 
 void setup() {
   // Serial init
-  if (debug) {
+  if (DEBUG_MODE) {
     Serial.begin(115200);
     while (!Serial) ;
   }
 
   // RFM95 init
   while (!rf95.init()) {
-    if (debug) Serial.println("RF95 NOT FOUND");
+    DEBUG_PRINTLN("RF95 NOT FOUND");
     delay(1000);
   }
-  while (!rf95.setFrequency(915)) {
-    if (debug) Serial.println("RF95 SET FREQUENCY FAILED");
-    delay(1000);
-  }
+  rf95.setFrequency(915);
+  rf95.setModemConfig(RH_RF95::Bw500Cr45Sf128);
   rf95.setTxPower(23, false);
   digitalWrite(2, LOW);
   delay(10);
@@ -87,11 +125,11 @@ void loop() {
   }
 
   if (rf95.available()) {
-    if (debug) Serial.println("RF95 MESSAGE AVAILABLE");
+    DEBUG_PRINTLN("RF95 MESSAGE AVAILABLE");
     uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
     uint8_t len = sizeof(buf);
     if (rf95.recv(buf, &len)) {
-      if (debug) {
+      if (DEBUG_MODE) {
         RH_RF95::printBuffer("RECV: ", buf, len);
         Serial.println((char*)buf);
         Serial.print("RSSI: ");
@@ -105,13 +143,13 @@ void loop() {
   // Serial.println("V");
 
   int i = 0;
-  while (bno.getSensorEvent(&sensorValue) && i < 10) {
+  while (bno.getSensorEvent(&sensorValue) && i < 5) {
     switch (sensorValue.sensorId) {
       case SH2_LINEAR_ACCELERATION:
-        rp.acc_cal = sensorValue.status;
-        rp.ax = sensorValue.un.linearAcceleration.x;
-        rp.ay = sensorValue.un.linearAcceleration.y;
-        rp.az = sensorValue.un.linearAcceleration.z;
+        rp.lacc_cal = sensorValue.status;
+        rp.lax = sensorValue.un.linearAcceleration.x;
+        rp.lay = sensorValue.un.linearAcceleration.y;
+        rp.laz = sensorValue.un.linearAcceleration.z;
         break;
       case SH2_GYRO_INTEGRATED_RV:
         rp.gyro_cal = sensorValue.status;
@@ -130,6 +168,5 @@ void loop() {
     rp.altitude = bmp.readAltitude(SEALEVELPRESSURE_HPA);
   }
 
-  transmit_packet(rp);
-  delay(5);
+  buffer_packet(rp);
 }

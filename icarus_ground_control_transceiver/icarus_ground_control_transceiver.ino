@@ -13,9 +13,8 @@ void setup() {
   while (!rf95.init()) {
     delay(1000);
   }
-  while (!rf95.setFrequency(915)) {
-    delay(1000);
-  }
+  rf95.setFrequency(915);
+  rf95.setModemConfig(RH_RF95::Bw500Cr45Sf128);
   rf95.setTxPower(23, false);
   digitalWrite(2, LOW);
   delay(10);
@@ -32,5 +31,4 @@ void loop() {
       Serial.println(rssi_pstr);
     }
   }
-  delay(20);
 }

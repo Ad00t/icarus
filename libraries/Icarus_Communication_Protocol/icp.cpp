@@ -1,8 +1,13 @@
 #include "icp.h"
 #include <sstream>
-#include <stdexcept>
 #include <string>
-#include <chrono>
+
+string ftos(float f) {
+    std::ostringstream stream;
+    stream.precision(3);
+    stream << std::fixed << f;
+    return stream.str();
+}
 
 // Base Packet Class Implementation
 packet_t::packet_t(packet_type ptype, terminus src, terminus dest)
@@ -10,12 +15,16 @@ packet_t::packet_t(packet_type ptype, terminus src, terminus dest)
 
 packet_t::packet_t() {}
 
+void packet_t::set_ts(unsigned long t) const {
+    ts = t;
+}
+
 string packet_t::header_packetify() const {
-    return to_string(ptype) + to_string(src) + to_string(dest);
+    return to_string(ptype) + to_string(src) + to_string(dest) + "," + to_string(ts);
 }
 
 string packet_t::header_prettify() const {
-    return "type:" + to_string(ptype) + "   src:" + to_string(src) + "   dest:" + to_string(dest);
+    return "type:" + to_string(ptype) + "   src:" + to_string(src) + "   dest:" + to_string(dest) + "   ts:" + to_string(ts);
 }
 
 string packet_t::packetify() const {
@@ -31,18 +40,18 @@ reading_packet_t::reading_packet_t()
     : packet_t(READING, FC, GC) {}
 
 string reading_packet_t::data_packetify() const {
-    return to_string(gyro_cal) + "," + to_string(acc_cal) + "," +
-           to_string(qr) + "," + to_string(qi) + "," + to_string(qj) + "," +  to_string(qk) + "," +
-           to_string(ax) + "," + to_string(ay) + "," + to_string(az) + "," +
-           to_string(temperature) + "," + to_string(pressure) + "," + to_string(altitude);
+    return to_string(gyro_cal) + "," + to_string(lacc_cal) + "," +
+           ftos(qr) + "," + ftos(qi) + "," + ftos(qj) + "," +  ftos(qk) + "," +
+           ftos(lax) + "," + ftos(lay) + "," + ftos(laz) + "," +
+           ftos(temperature) + "," + ftos(pressure) + "," + ftos(altitude);
 }
 
 string reading_packet_t::data_prettify() const {
-    return "gyro_cal:" + to_string(gyro_cal) + "   acc_cal:" + to_string(acc_cal) + 
-           "   qr:" + to_string(qr) + "   qi:" + to_string(qi) + "   qj:" + to_string(qj)  + "   qk:" + to_string(qk) +
-           "   a_x:" + to_string(ax) + "   a_y:" + to_string(ay) + "   a_z:" + to_string(az) +
-           "   temperature:" + to_string(temperature) + "   pressure:" + to_string(pressure) +
-           "   altitude:" + to_string(altitude);
+    return "gyro_cal:" + to_string(gyro_cal) + "   lacc_cal:" + to_string(lacc_cal) + 
+           "   qr:" + ftos(qr) + "   qi:" + ftos(qi) + "   qj:" + ftos(qj)  + "   qk:" + ftos(qk) +
+           "   lax:" + ftos(lax) + "   lay" + ftos(lay) + "   laz:" + ftos(laz) +
+           "   temperature:" + ftos(temperature) + "   pressure:" + ftos(pressure) +
+           "   altitude:" + ftos(altitude);
 }
 
 // Log Packet Class Implementation
@@ -72,7 +81,7 @@ command_packet_t::command_packet_t(command_code code, const string str)
 string command_packet_t::data_packetify() const {
     string s;
     for (size_t i = 0; i < args.size(); i++) {
-        s += to_string(args[i]);
+        s += ftos(args[i]);
         if (i < args.size() - 1) s += ",";
     }
     return s;
