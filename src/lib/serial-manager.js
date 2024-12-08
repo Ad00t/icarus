@@ -58,12 +58,18 @@ class SerialManager {
           break;
         }
         lineBuffer += value;
-        const lines = lineBuffer.split("\n");
+        const lines = lineBuffer.split("\n")
         lineBuffer = lines.pop();
-        for (const line of lines) {
-          console.log(line);
-          const pobj = this.interpretRxPacket(line);
-          this.onPacketRecv(pobj);
+        for (let line of lines) {
+          line = line.replace('\r', '').replace('\n', '').trim();
+          if (line) {
+            let packets = line.split(';');
+            console.log(packets);
+            for (let packet of packets) {
+              const pobj = this.interpretRxPacket(packet);
+              if (pobj) this.onPacketRecv(pobj);
+            }
+          }
         }
       }
     } catch (error) {
@@ -76,35 +82,42 @@ class SerialManager {
   }
 
   interpretRxPacket(pstr) {
-    const pobj = {};
-    const pstr_split = pstr.split(',');
-    console.log(pstr);
-    pobj["rssi"] = parseFloat(pstr_split[0]);
-    pobj["ptype"] = parseInt(pstr_split[1][0]);
-    pobj["src"] = parseInt(pstr_split[1][1]);
-    pobj["dest"] = parseInt(pstr_split[1][2]);
-    pobj["rx_ts"] = Date.now();
-    switch(pobj["ptype"]) {
-      case 0: // READING
-        pobj["gyro_cal"] = parseInt(pstr_split[2]);
-        pobj["lacc_cal"] = parseInt(pstr_split[3]);
-        pobj["qr"] = parseFloat(pstr_split[4]);
-        pobj["qi"] = parseFloat(pstr_split[5]);
-        pobj["qj"] = parseFloat(pstr_split[6]);
-        pobj["qk"] = parseFloat(pstr_split[7]);
-        pobj["lax"] = parseFloat(pstr_split[8]);
-        pobj["lay"] = parseFloat(pstr_split[9]);
-        pobj["laz"] = parseFloat(pstr_split[10]);
-        pobj["temperature"] = parseFloat(pstr_split[11]);
-        pobj["pressure"] = parseFloat(pstr_split[12]);
-        pobj["altitude"] = parseFloat(pstr_split[13]);
-        break;
-      case 1: // LOG
-        pobj["level"] = parseInt(pstr_split[2]);
-        pobj["desc"] = pstr_split[3];
-        break;
+    try {
+      const pobj = {};
+      const pstr_split = pstr.split(',');
+      let off = 0;
+      if (parseFloat(pstr_split[0]) < 0) {
+        pobj["rssi"] = parseFloat(pstr_split[0]);
+        off = 1;
+      } 
+      pobj["ptype"] = parseInt(pstr_split[off][0]);
+      pobj["src"] = parseInt(pstr_split[off][1]);
+      pobj["dest"] = parseInt(pstr_split[off++][2]);
+      pobj["ts"] = parseFloat(pstr_split[off++]);
+      switch(pobj["ptype"]) {
+        case 0: // READING
+          pobj["gyro_cal"] = parseInt(pstr_split[off++]);
+          pobj["lacc_cal"] = parseInt(pstr_split[off++]);
+          pobj["qr"] = parseFloat(pstr_split[off++]);
+          pobj["qi"] = parseFloat(pstr_split[off++]);
+          pobj["qj"] = parseFloat(pstr_split[off++]);
+          pobj["qk"] = parseFloat(pstr_split[off++]);
+          pobj["lax"] = parseFloat(pstr_split[off++]);
+          pobj["lay"] = parseFloat(pstr_split[off++]);
+          pobj["laz"] = parseFloat(pstr_split[off++]);
+          pobj["temperature"] = parseFloat(pstr_split[off++]);
+          pobj["pressure"] = parseFloat(pstr_split[off++]);
+          pobj["altitude"] = parseFloat(pstr_split[off++]);
+          break;
+        case 1: // LOG
+          pobj["level"] = parseInt(pstr_split[off++]);
+          pobj["desc"] = pstr_split[off++];
+          break;
+      }
+      return pobj;
+    } catch (e) {
+
     }
-    return pobj;
   }
 
   createCommandPacket() {

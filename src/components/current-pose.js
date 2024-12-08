@@ -4,7 +4,7 @@ import React from "react";
 import ComponentBox from "@/components/component-box";
 import { Typography, Grid2 } from "@mui/material";
 
-export default function Pose({ posesRef, posx, posy, width, height }) {
+export default function CurrentPose({ posesRef, posx, posy, width, height }) {
   function createPoseLabel(type, component, label, r=2) {
     let val = posesRef.current[posesRef.current.length - 1][type][component];
     val = Math.round((val + Number.EPSILON) * Math.pow(10, r)) / Math.pow(10, r);
@@ -30,9 +30,9 @@ export default function Pose({ posesRef, posx, posy, width, height }) {
         </Grid2>
 
         <Grid2 xs={3}>
-          { createPoseLabel('pos', 'x', 'x') }
-          { createPoseLabel('pos', 'y', 'y') }
-          { createPoseLabel('pos', 'z', 'z') }
+          { createPoseLabel('pos', 'x', 'px') }
+          { createPoseLabel('pos', 'y', 'py') }
+          { createPoseLabel('pos', 'z', 'pz') }
         </Grid2>
 
         <Grid2 xs={3}>

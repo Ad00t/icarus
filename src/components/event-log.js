@@ -38,7 +38,7 @@ export default function EventLog({ eventLog, posx, posy, width, height }) {
                 color="black"
                 key={i}
               >
-                { `${new Date(log.rx_ts).toTimeString().slice(0, 8)} -- ${logLevelMap[log.level]} -- ${log.desc}` }
+                { `T${(log.ts/1000.0).toFixed(3)} -- ${logLevelMap[log.level]} -- ${log.desc}` }
                 <br />
               </Typography>
             )

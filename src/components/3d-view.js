@@ -2,38 +2,9 @@
 
 import { useRef, useEffect } from "react";
 import ComponentBox from "@/components/component-box";
-import Button from "@mui/material/Button";
 import * as THREE from "three";
 
-export default function ThreeDView({ posesRef, posx, posy, width, height }) {
-  function onReset() {
-    posesRef.current.push({
-      "ts": Date.now(),
-      "quat": new THREE.Quaternion(0, 0, 0, 0),
-      "acc": new THREE.Vector3(0, 0, 0),
-      "vel": new THREE.Vector3(0, 0, 0),
-      "pos": new THREE.Vector3(0, 0, 0),
-    });
-  }
-  
-  return (
-    <ComponentBox
-      posx={posx} posy={posy}
-      width={width} height={height}
-    >
-      <Button
-        sx={{ width: '10px', margin: 'auto', marginTop: '10px', marginRight: '10px' }}
-        variant="contained"
-        onClick={onReset}
-      >
-        RESET
-      </Button>
-      <ThreeDGraph posesRef={posesRef}/>
-    </ComponentBox>
-  );
-}
-
-function ThreeDGraph({ posesRef }) {
+export default function ThreeDView({ posesRef, setChartData, posx, posy, width, height }) { 
   const mountRef = useRef(null);
   const rocketRef = useRef(null);
   const cameraRef = useRef(null);
@@ -112,13 +83,13 @@ function ThreeDGraph({ posesRef }) {
 
     const animate = () => {
       requestAnimationFrame(animate);
-      if (rocketRef.current) {
+      if (rocketRef.current && posesRef.current.length > 0) {
         const currPose = posesRef.current[posesRef.current.length - 1];
-        rocketRef.current.position.copy(currPose.pos);
-        rocketRef.current.quaternion.copy(currPose.quat);
-        const camPos = currPose.pos.clone().add(cameraOff);
+        rocketRef.current.position.lerp(currPose.pos, 0.1);
+        rocketRef.current.quaternion.slerp(currPose.quat, 0.1);
+        const camPos = rocketRef.current.position.clone().add(cameraOff);
         cameraRef.current.position.copy(camPos);
-        cameraRef.current.lookAt(currPose.pos);
+        cameraRef.current.lookAt(rocketRef.current.position);
       }
       renderer.render(scene, camera);
     };
@@ -135,5 +106,12 @@ function ThreeDGraph({ posesRef }) {
     };
   }, []);
 
-  return <div ref={mountRef} style={{ width: "100%", height: "100%" }}></div>;
+  return (
+    <ComponentBox
+      posx={posx} posy={posy}
+      width={width} height={height}
+    >
+      <div ref={mountRef} style={{ width: "100%", height: "100%" }}></div>
+    </ComponentBox>
+  );
 }
