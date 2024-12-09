@@ -66,8 +66,10 @@ class SerialManager {
             let packets = line.split(';');
             console.log(packets);
             for (let packet of packets) {
-              const pobj = this.interpretRxPacket(packet);
-              if (pobj) this.onPacketRecv(pobj);
+              if (packet.trim()) {
+                const pobj = this.interpretRxPacket(packet);
+                if (pobj) this.onPacketRecv(pobj);
+              }
             }
           }
         }

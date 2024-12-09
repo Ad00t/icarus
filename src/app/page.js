@@ -24,7 +24,7 @@ export default function Home() {
     "vel": new THREE.Vector3(0, 0, 0),
     "pos": new THREE.Vector3(0, 0, 0),
   } ]);
-  const [ chartData, setChartData ] = useState({ "pps": [], "rssi": [], "acc": [], "vel": [], "pos": [] });
+  const [ chartData, setChartData ] = useState({ "pps": [], "rssi": [], "alt": [], "acc": [], "vel": [], "pos": [] });
   const [ eventLog, setEventLog ] = useState([]);
   const csvWriterRef = useRef(null);
 
@@ -43,6 +43,9 @@ export default function Home() {
         if ('rssi' in pobj) {
           appendChartData("rssi", { "ts": pose.ts, "rssi": pobj.rssi });
           packetCount++;
+        }
+        if (pobj.altitude < 1000) {
+          appendChartData("alt", { "ts": pose.ts, "alt": pobj.altitude });
         }
         appendChartData("acc", { "ts": pose.ts, "ax": pose.acc.x, "ay": pose.acc.y, "az": pose.acc.z });
         appendChartData("vel", { "ts": pose.ts, "vx": pose.vel.x, "vy": pose.vel.y, "vz": pose.vel.z });

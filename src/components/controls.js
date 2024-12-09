@@ -18,7 +18,7 @@ export default function Controls({ posesRef, setChartData, csvWriterRef, posx, p
       "vel": new THREE.Vector3(0, 0, 0),
       "pos": new THREE.Vector3(0, 0, 0),
     }];
-    setChartData({ "pps": [], "rssi": [], "acc": [], "vel": [], "pos": [] });
+    setChartData({ "pps": [], "rssi": [], "alt": [], "acc": [], "vel": [], "pos": [] });
   }
 
   function recordingToggle() {

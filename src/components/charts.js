@@ -10,6 +10,7 @@ export default function Charts({ chartData, posx, posy, width, height }) {
   const [ chartConfigs, setChartConfigs ] = useState({
     "pps": { "visible": true },
     "rssi": { "visible": true },
+    "alt": { "visible": true },
     "acc": { "visible": true },
     "vel": { "visible": true },
     "pos": { "visible": true } 
@@ -36,6 +37,13 @@ export default function Charts({ chartData, posx, posy, width, height }) {
             onClick={() => setChartConfigs({ ...chartConfigs, rssi: { "visible": !chartConfigs.rssi.visible } })}
           >
             RSSI
+          </Button>
+          <Button
+            variant="contained"
+            color={chartConfigs.alt.visible ? 'success' : 'error' }
+            onClick={() => setChartConfigs({ ...chartConfigs, alt: { "visible": !chartConfigs.alt.visible } })}
+          >
+            ALT
           </Button>
           <Button
             variant="contained"
@@ -76,6 +84,18 @@ export default function Charts({ chartData, posx, posy, width, height }) {
             series={[{ dataKey: 'rssi', label: 'RSSI (dBm)', showMark: false, color: '#FF0000', connectNulls: true }]}
             width={600}
             height={200}
+            skipAnimation
+          />
+        }
+        { chartConfigs.alt.visible && 
+          <LineChart
+            dataset={chartData.alt}
+            xAxis={[{ dataKey: 'ts', label: 'Elapsed Time (s)' }]}
+            series={[
+              { dataKey: 'alt', label: 'Altitude (m)', showMark: false, connectNulls: true },
+            ]}
+            width={600}
+            height={400}
             skipAnimation
           />
         }
