@@ -37,7 +37,7 @@ void transmit_packet(const packet_t& packet) {
 void transmit_packet_buffer() {
   DEBUG_PRINTLN(String(packet_buffer));
   DEBUG_PRINT("Transmitting...   ");
-  bool packet_valid = rf95.send((uint8_t*) packet_buffer, packet_index - 1);
+  bool packet_valid = rf95.send((uint8_t*) packet_buffer, sizeof(packet_buffer));
   DEBUG_PRINT("Valid:");
   DEBUG_PRINT(packet_valid);
   // rf95.waitPacketSent();
@@ -89,7 +89,7 @@ void setup() {
     delay(1000);
   }
   rf95.setFrequency(915);
-  rf95.setModemConfig(RH_RF95::Bw500Cr45Sf128);
+  rf95.setModemConfig(RH_RF95::Bw125Cr45Sf128);
   rf95.setTxPower(23, false);
   digitalWrite(2, LOW);
   delay(10);
