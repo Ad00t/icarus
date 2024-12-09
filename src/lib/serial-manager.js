@@ -95,7 +95,8 @@ class SerialManager {
       pobj["ptype"] = parseInt(pstr_split[off][0]);
       pobj["src"] = parseInt(pstr_split[off][1]);
       pobj["dest"] = parseInt(pstr_split[off++][2]);
-      pobj["ts"] = parseFloat(pstr_split[off++]);
+      pobj["tx_ts"] = parseFloat(pstr_split[off++]);
+      pobj["rx_ts"] = Date.now();
       switch(pobj["ptype"]) {
         case 0: // READING
           pobj["gyro_cal"] = parseInt(pstr_split[off++]);

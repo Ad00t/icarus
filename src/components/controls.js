@@ -7,8 +7,8 @@ import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import StopCircleIcon from "@mui/icons-material/StopCircle";
 import * as THREE from "three";
 
-export default function Controls({ posesRef, setChartData, csvWriterRef, posx, posy, width, height }) {
-  const [ isRecording, setIsRecording ] = useState(Boolean(csvWriterRef.current));
+export default function Controls({ posesRef, setChartData, isCapturingRef, datalogRef, melRef, posx, posy, width, height }) {
+  const [ isCapturingState, setIsCapturingState ] = useState(isCapturingRef.current);
 
   function onReset() {
     console.log("RESET");
@@ -21,19 +21,37 @@ export default function Controls({ posesRef, setChartData, csvWriterRef, posx, p
     setChartData({ "pps": [], "rssi": [], "alt": [], "acc": [], "vel": [], "pos": [] });
   }
 
-  function recordingToggle() {
-    if (isRecording) {
-      setIsRecording(false);
-      csvWriterRef.current = null;
+  async function recordingToggle() {
+    if (isCapturingRef.current) {
+      isCapturingRef.current = false;
+      setIsCapturingState(false);
+      try {
+        const folder = new Date().toISOString().replace(/:/g, '-');
+
+        const datalogRes = await fetch('/api/write-csv', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fp: `${folder}/datalog.csv`, data: datalogRef.current }),
+        });
+        const datalogResult = await datalogRes.json();
+        console.log(datalogResult.message);
+
+        const melRes = await fetch('/api/write-csv', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fp: `${folder}/mel.csv`, data: melRef.current }),
+        });
+        const melResult = await melRes.json();
+        console.log(melResult.message);
+
+        datalogRef.current = [];
+        melRef.current = [];
+      } catch (error) {
+        console.error('Error exporting CSV:', error);
+      }
     } else {
-      setIsRecording(true);
-      // let dirpath = `${new Date().toISOString()}`;
-      // fs.mkdirSync(dirpath, { recursive: true });
-      // csvWriterRef.current = createObjectCsvWriter({
-      //   path: `${dirpath}/packets.csv`,
-      //   header: [ 'ts', 'ptype', 'src', 'dest', 'rssi', 'gyro_cal', 'lacc_cal', 'qr', 'qi', 'qj', 'qk', 'lax', 'lay', 'laz', 'temperature', 'pressure', 'altitude', 'level', 'desc' ]
-      // });
-      csvWriterRef.current = true;
+      isCapturingRef.current = true;
+      setIsCapturingState(true);
     }
   }
 
@@ -60,7 +78,7 @@ export default function Controls({ posesRef, setChartData, csvWriterRef, posx, p
           onClick={recordingToggle}
           color="error"
         >
-          { isRecording ? <StopCircleIcon /> : <FiberManualRecordIcon /> }
+          { isCapturingState ? <StopCircleIcon /> : <FiberManualRecordIcon /> }
         </IconButton>
       </Grid2>
     </ComponentBox>

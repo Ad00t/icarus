@@ -26,7 +26,9 @@ export default function Home() {
   } ]);
   const [ chartData, setChartData ] = useState({ "pps": [], "rssi": [], "alt": [], "acc": [], "vel": [], "pos": [] });
   const [ eventLog, setEventLog ] = useState([]);
-  const csvWriterRef = useRef(null);
+  const isCapturingRef = useRef(false);
+  const datalogRef = useRef([]);
+  const melRef = useRef([]);
 
   let packetCount = 0;
 
@@ -38,7 +40,7 @@ export default function Home() {
     switch (pobj.ptype) {
       case 0:
         setLastReading(pobj);
-        let pose = calculatePose(pobj)
+        let pose = calculatePose(pobj);
         posesRef.current.push(pose);
         if ('rssi' in pobj) {
           appendChartData("rssi", { "ts": pose.ts, "rssi": pobj.rssi });
@@ -50,13 +52,16 @@ export default function Home() {
         appendChartData("acc", { "ts": pose.ts, "ax": pose.acc.x, "ay": pose.acc.y, "az": pose.acc.z });
         appendChartData("vel", { "ts": pose.ts, "vx": pose.vel.x, "vy": pose.vel.y, "vz": pose.vel.z });
         appendChartData("pos", { "ts": pose.ts, "px": pose.pos.x, "py": pose.pos.y, "pz": pose.pos.z });
+        if (isCapturingRef.current) {
+          datalogRef.current.push(pobj);
+        }
         break;
       case 1:
         setEventLog(prev => [ ...prev, pobj ]);
+        if (isCapturingRef.current) {
+          melRef.current.push(pobj);
+        }
         break;
-    }
-    if (csvWriterRef.current) {
-      csvWriterRef.current.writeRecords(pobj);
     }
   }
 
@@ -69,7 +74,7 @@ export default function Home() {
   alignToZneg.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 2);
 
   function calculatePose(pobj) {
-    const pose = { 'ts': pobj.ts / 1000.0 };
+    const pose = { 'ts': pobj.tx_ts / 1000.0 };
     pose.quat = new THREE.Quaternion(pobj.qi, pobj.qj, pobj.qk, pobj.qr);
     let accQuat = pose.quat.clone();
     pose.quat.multiply(alignToZneg);
@@ -110,7 +115,9 @@ export default function Home() {
       <Controls 
         posesRef={posesRef}
         setChartData={setChartData}
-        csvWriterRef={csvWriterRef}
+        isCapturingRef={isCapturingRef}
+        datalogRef={datalogRef}
+        melRef={melRef}
         posx={675} posy={10} 
         width={325} height={85} 
       />
