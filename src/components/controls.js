@@ -27,23 +27,15 @@ export default function Controls({ posesRef, setChartData, isCapturingRef, datal
       setIsCapturingState(false);
       try {
         const folder = new Date().toISOString().replace(/:/g, '-');
-
-        const datalogRes = await fetch('/api/write-csv', {
+        const res = await fetch('/api/write-csv', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fp: `${folder}/datalog.csv`, data: datalogRef.current }),
+          body: JSON.stringify([
+            { fp: `${folder}/datalog.csv`, data: datalogRef.current },
+            { fp: `${folder}/mel.csv`, data: melRef.current }
+          ]),
         });
-        const datalogResult = await datalogRes.json();
-        console.log(datalogResult.message);
-
-        const melRes = await fetch('/api/write-csv', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fp: `${folder}/mel.csv`, data: melRef.current }),
-        });
-        const melResult = await melRes.json();
-        console.log(melResult.message);
-
+        console.log(await res.json());
         datalogRef.current = [];
         melRef.current = [];
       } catch (error) {
