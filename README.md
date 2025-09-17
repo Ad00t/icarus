@@ -23,22 +23,33 @@ https://github.com/user-attachments/assets/0684ee6b-21b4-4d43-a303-94b68e746d67
 ## Parts List
 
 ### Flight Computer
-2x Amazon.com: Arduino UNO R4 WiFi [ABX00087] - Renesas RA4M1 / ESP32-S3 - Wi-Fi, Bluetooth, USB-C, CAN, DAC, OP AMP, Qwiic Connector, 12x8 LED Matrix : Electronics
-Amazon.com: 5pack 9v Battery Clip with 2.1mm X 5.5mm Male DC Plug for Arduino by Corpco : Electronics
-Amazon.com: Energizer 9V Batteries, 2 Count MAX Premium Alkaline 9 Volt : Electronics
-TUOFENG 22 awg Wire Solid Core Hookup Wires-6 Different Colored Breadboard Wires 30ft or 9m Each, 22 Gauge Electronic Wire PVC (OD: 1.60mm) Arduino Wire - Amazon.com
-4PCS Breadboards Kit Include 2PCS 830 Point 2PCS 400 Point Solderless Breadboards for Proto Shield Distribution Connecting Blocks: Amazon.com: Industrial & Scientific
-2x Adafruit RFM95W LoRa Radio Transceiver Breakout - 868 or 915 MHz [RadioFruit] : ID 3072 : Adafruit Industries, Unique & fun DIY electronics and kits
-Adafruit BMP390 - Precision Barometric Pressure and Altimeter [STEMMA QT / Qwiic] : ID 4816 : Adafruit Industries, Unique & fun DIY electronics and kits
-Adafruit 9-DOF Orientation IMU Fusion Breakout - BNO085 (BNO080) [STEMMA QT / Qwiic] : ID 4754 : Adafruit Industries, Unique & fun DIY electronics and kits
+
+* 2x Amazon.com: Arduino UNO R4 WiFi [ABX00087] - Renesas RA4M1 / ESP32-S3 - Wi-Fi, Bluetooth, USB-C, CAN, DAC, OP AMP, Qwiic Connector, 12x8 LED Matrix : Electronics
+
+* Amazon.com: 5pack 9v Battery Clip with 2.1mm X 5.5mm Male DC Plug for Arduino by Corpco : Electronics
+
+* Amazon.com: Energizer 9V Batteries, 2 Count MAX Premium Alkaline 9 Volt : Electronics
+
+* TUOFENG 22 awg Wire Solid Core Hookup Wires-6 Different Colored Breadboard Wires 30ft or 9m Each, 22 Gauge Electronic Wire PVC (OD: 1.60mm) Arduino Wire - Amazon.com
+
+* 4PCS Breadboards Kit Include 2PCS 830 Point 2PCS 400 Point Solderless Breadboards for Proto Shield Distribution Connecting Blocks: Amazon.com: Industrial & Scientific
+
+* 2x Adafruit RFM95W LoRa Radio Transceiver Breakout - 868 or 915 MHz [RadioFruit] : ID 3072 : Adafruit Industries, Unique & fun DIY electronics and kits
+
+* Adafruit BMP390 - Precision Barometric Pressure and Altimeter [STEMMA QT / Qwiic] : ID 4816 : Adafruit Industries, Unique & fun DIY electronics and kits
+
+* Adafruit 9-DOF Orientation IMU Fusion Breakout - BNO085 (BNO080) [STEMMA QT / Qwiic] : ID 4754 : Adafruit Industries, Unique & fun DIY electronics and kits
 
 ### Chassis
 
-2x Amazon.com: uxcell Clear Rigid Acrylic Pipe 76mm(3") ID x 80mm OD x 305mm(12") Round Tube Tubing : Industrial & Scientific
-Amazon.com: 36-inch Ripstop Nylon Cloth Parachute for Water or Model Rocket : Arts, Crafts & Sewing
-Amazon.com: Estes 2274 Recovery Wadding : Arts, Crafts & Sewing
-1010 One piece Delrin Railbutton (rail-buttons.com)
+* 2x Amazon.com: uxcell Clear Rigid Acrylic Pipe 76mm(3") ID x 80mm OD x 305mm(12") Round Tube Tubing : Industrial & Scientific
+
+* Amazon.com: 36-inch Ripstop Nylon Cloth Parachute for Water or Model Rocket : Arts, Crafts & Sewing
+
+* Amazon.com: Estes 2274 Recovery Wadding : Arts, Crafts & Sewing
+
+* 1010 One piece Delrin Railbutton (rail-buttons.com)
 
 ### Miscellaneous
 
-Amazon.com: MakerBeam 900x10x10mm Beam Clear anodised (Pack of 2) : Industrial & Scientific
+* Amazon.com: MakerBeam 900x10x10mm Beam Clear anodised (Pack of 2) : Industrial & Scientific
