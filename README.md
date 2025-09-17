@@ -4,7 +4,8 @@
 
 The goal of this project was to give me an introduction into consumer aerospace, avionics hardware, circuitry, flight control, 3D printing, and long range communications. Mk. 1 features a fully-from-scratch model rocket, with a custom 3D printed nose cone, motor mount, and aft fins. It sports a 36” parachute for recovery and an Aerotech G80T-10 rocket motor, expected to carry it to an apogee of ~443 meters. The nose cone houses a compact arduino flight controller, which continuously polls an Adafruit BMP390 barometric altimeter and a BNO085 inertial measurement unit for altitude and orientation readings respectively. These readings are broadcast via a 915Mhz RFM9x LoRa transceiver to a similar transceiver unit on the ground, which is connected to my laptop via USB Serial. Through testing, the range of these transceivers exceeds 500 meters, which should be sufficient for this iteration of the project. Packets are transmitted via a custom Icarus Communication Protocol (ICP) that dictates how they are interpreted on both ends. I’ve also built a custom telemetry dashboard that I’m calling Houston using Next.js, a React framework. It reads packets from the ground control transceiver and calculates real-time attitude (position, velocity, acceleration, heading) from just accelerometer and gyroscope data. This attitude is displayed in a 3D graph with its origin at the launch site.
 
-All onboard flight controller code can be found in the arduino folder. The ground control visualization dashboard can be found in the houston folder.
+All onboard flight controller code can be found in the arduino folder. 
+The ground control visualization dashboard can be found in the houston folder.
 
 ## Launch Notes (12/9/24)
 
