@@ -11,23 +11,25 @@ The ground control visualization dashboard can be found in the houston folder.
 
 The rocket immediately canted off to the side. I believe this is because of the launch rail. It was a last-minute makeshift and wasn’t tall enough, as the recommended length was 6-8 feet and mine was about 1 meter. I definitely will be obtaining a proper launch rail for Mk. 2. Furthermore, about 10 seconds in, ground control stopped receiving readings. My best guesses are either the rocket passing the cliff-side and the RF signal being obstructed, or the sudden acceleration/deceleration knocking the battery loose. To aid in recovery, I will be integrating a GPS module in Mk. 2 as well.
 
-# Avionics Bay & Ground Control Transceiver
+## Avionics Bay & Ground Control Transceiver
 
 <img width="2532" height="1170" alt="IMG_3880" src="https://github.com/user-attachments/assets/ce25ef94-621b-4899-bfbd-db63976fd693" />
 
 ![IMG_3877](https://github.com/user-attachments/assets/34d84bf1-29a8-4268-b343-04b30edbc077)
-
-## Liftoff
-
-https://github.com/user-attachments/assets/fa1297a8-73c1-4d0e-8d8d-37a8642f6174
-
-![IMG_3890](https://github.com/user-attachments/assets/0fcfe3a2-674a-49ec-8303-3fa97f563ead)
 
 ## Ground Control Dashboard
 
 This screen recording was captured at launch.
 
 https://github.com/user-attachments/assets/0684ee6b-21b4-4d43-a303-94b68e746d67
+
+## Finalized Assembly
+
+![IMG_3890](https://github.com/user-attachments/assets/0fcfe3a2-674a-49ec-8303-3fa97f563ead)
+
+## Liftoff
+
+https://github.com/user-attachments/assets/fa1297a8-73c1-4d0e-8d8d-37a8642f6174
 
 ## Parts List
 
