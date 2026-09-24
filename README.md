@@ -25,7 +25,7 @@ https://github.com/user-attachments/assets/fa1297a8-73c1-4d0e-8d8d-37a8642f6174
 
 This screen recording was captured at launch.
 
-https://github.com/user-attachments/assets/0684ee6b-21b4-4d43-a303-94b68e746d67
+[ground-control-launch-screencap.mp4](https://github.com/user-attachments/assets/0684ee6b-21b4-4d43-a303-94b68e746d67)
 
 ## Finalized Assembly
 
